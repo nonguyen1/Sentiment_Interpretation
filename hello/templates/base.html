@@ -40,6 +40,17 @@
         max-width: 100%
     }
 
+    .main {
+        margin: auto;
+        width: 50%;
+        border: 3px solid green;
+        padding: 10px;
+    }
+
+    .input_sen {
+      width: 90%;
+    }
+
 
   </style>
 </head>
@@ -51,7 +62,7 @@
         <a href="/"><span class="glyphicon glyphicon-home"></span> Home</a>
       </li>
       <li>
-        <a href="https://devcenter.heroku.com/articles/how-heroku-works"><span class="glyphicon glyphicon-user"></span> How Heroku Works</a>
+        <a href="/devs/"><span class="glyphicon glyphicon-user"></span> Developers</a>
       </li>
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-info-sign"></span> Getting Started Guides <span class="caret"></span></a>
@@ -71,13 +82,15 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="navbar-right">
-        <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-book"></span> Heroku Dev Center</a>
+        <a href="https://github.com/nonguyen1/Sentiment_Interpretation"><span class=""></span> Github</a>
       </li>
     </ul>
   </div>
 </nav>
 
+<div class="main">
 {% block content %}{% endblock %}
+</div>
 
 </body>
 </html>
