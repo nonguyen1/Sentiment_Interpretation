@@ -1,5 +1,10 @@
 # Python: Getting Started
 
+
+Notes to self:
+1. Make sure you have postgresql installed `brew install postgresql`
+1. Run and test locally using `heroku local web`
+
 A barebones Django app, which can easily be deployed to Heroku.
 
 This application supports the [Getting Started with Python on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) article - check it out.
