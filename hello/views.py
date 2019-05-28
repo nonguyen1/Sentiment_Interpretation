@@ -18,7 +18,7 @@ def handle_sentiment(request):
     ''' Sends back a ajax response for the sentiment analysis
     '''
     sentence = request.GET.get('sentence', None)
-    model.
+#    model.
     # TODO: Perform sentiment analysis here
     return JsonResponse({"sentiment": sentence})
 
