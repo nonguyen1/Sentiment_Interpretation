@@ -9,11 +9,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 LIN_REG_SUPERVISED = "./hello/ML/lin_reg_sup.pkl"
+EMOTION_LIN_REG_SUPERVISED = "./hello/ML/finalized_model_5(1).pkl"
+
 SENTIMENT = "./hello/ML/sentiment.pkl"
+EMOTION_SENTIMENT = "./hello/ML/sentiment_weights_model2.pkl"
 
 # Import our machine learning model here.
 model = pickle.load(open(LIN_REG_SUPERVISED, 'rb'))
 sentiment = pickle.load(open(SENTIMENT, 'rb'))
+
+emotion_model = pickle.load(open(EMOTION_LIN_REG_SUPERVISED, 'rb'))
+emotion_sentiment = pickle.load(open(EMOTION_SENTIMENT, 'rb'))
 
 # Use this model for prediction
 
@@ -30,9 +36,35 @@ def handle_sentiment(request):
     sent_vec = parse_sentence(sentence)
     pred = model.predict(sent_vec)[0]
 
-
-    # TODO(Nate): get all the weights from the model
     weights = get_sentence_weights(sent_vec)
+
+    return JsonResponse({
+        "sentence": sentence,
+        "pred": str(pred),
+        "weights": weights
+        })
+
+def handle_emotion(request):
+    ''' Sends back a ajax response for emotion analysis 
+    To scale up send to worker queue to handle more requests.
+    '''
+    sentence = request.GET.get('sentence', None)
+
+    # Vector transform for the emotion
+    sent_vec = emotion_sentiment.transform([sentence])
+    pred = emotion_model.predict(sent_vec)[0]
+
+    weights = {}
+
+    for index,rep in zip(sent_vec.indices,
+            emotion_sentiment.inverse_transform(sent_vec)[0]):
+
+        class_weights = []
+        num_classes = len(emotion_model.classes_)
+
+        for i in range(num_classes):
+            class_weights.append(emotion_model.coef_[i][index])
+        weights[str(rep)] = class_weights
 
     return JsonResponse({
         "sentence": sentence,
