@@ -3,182 +3,203 @@
 
 {% block content %}
 
-  <h1>Model</h1>
+<h1>Model</h1>
 
-  <!-- Add our jj-switch here to toggle between types of models -->
+<!-- Add our jj-switch here to toggle between types of models -->
 
-  <br/>
-  <!--
+<br/>
+<!--
   <form id="sen" method="get">
-    <br/>
-    <input id="myBtn" type="submit" class="btn" value="Click" name="mybtn">
+  <br/>
+  <input id="myBtn" type="submit" class="btn" value="Click" name="mybtn">
   </form>
-  -->
-  <input class="input_sen" id="sent" type="text" placeholder="Input your sentence here" name="mytextbox"/>
-  <br/>
-  <input id="predBtn" type="submit" class="btn" value="Predict" name="prdBtn">
-  <input id="clearBrn" type="submit" class="btn" value="Clear" name="clrBtn">
-  <br/>
-  <br/>
+-->
+<input class="input_sen" id="sent" type="text" value="" placeholder="Input your sentence here" name="mytextbox"/>
+<br/>
+<br/>
+<input id="predBtn" type="submit" class="btn" value="Predict" name="prdBtn">
+<input id="clearBtn" type="submit" class="btn" value="Clear" name="clrBtn">
+<br/>
+<br/>
 
-  <div disable id="myChart"><a class="zc-ref" href="https://www.zingchart.com">Powered by ZingChart</a></div>
+<div disable id="myChart"><a class="zc-ref" href="https://www.zingchart.com">Powered by ZingChart</a></div>
 
-  <style>
-      #myChart {
-        height:500px;
-        width:100%;
-        min-height:150px;
-      }
-      .zc-ref {
-        display:none;
-      }
-  </style>
+<style>
+#myChart {
+  height:500px;
+  width:100%;
+  min-height:150px;
+}
+    .zc-ref {
+      display:none;
+    }
+</style>
 
 {% endblock %}
 
 {% block scripts %}
-  <script>
-    $("#predBtn").click( () => {
-      let sentence = $("#sent").val();
 
-      if (sentence == null) {
-        return;
+<script>
+
+  // This is the object we need to adjust to change the data values.
+
+  //ZC.LICENSE=["b55b025e438fa8a98e32482b5f768ff5"];
+  var myConfig = {
+    "type":"hbar",
+    "title":{
+      "text":"Top & Bottom 5 products this month",
+      "text-align":"center",
+      "font-family":"arial",
+      "font-color":"#5b5b5b",
+      "font-size":"18px",
+      "padding":"25px",
+      "background-color":"none",
+      "adjustLayout":true
+    },
+    "plotarea":{
+      "adjustLayout":true,
+      "margin":'dynamic'
+    },
+    "plot":{
+      "valueBox":{
+        "fontColor":"#000"
+      },
+      "animation": {
+        "effect": 2,
+        "method": 3,
+        "speed": 800,
+        "delay": 550
+      },
+      "stacked":true
+    },
+    "scale-x":{
+      "offset-end":"55%",
+      "offset-x":"50%",
+      "alpha":1,
+      "tick":{
+        "alpha":0
+      },
+      "label":{
+        "text":"Bottom 5 products by sales",
+        "font-size": 14
       }
-
-      $.ajax({
-        url: '/ajax/handle_sentiment/',
-        data: {
-          'sentence': sentence
+    },
+    "scale-x-2":{
+      "offset-start":"55%",
+      "alpha":0,
+      "tick":{
+        "alpha":0
+      },
+      "label":{
+        "text":"Top 5 products by sales",
+        "font-size": 14
+      },
+    },
+    "scale-y":{ },
+    "scale-y-2":{ },
+    "series":[
+      {
+        "values":[-5,-4,-6,-7,-1],
+        "decimals":2,
+        "stack":1,
+        "scales":"scale-x,scale-y",
+        'data-custom-token': ['Videocon 1.5 Ton Star Split', 'Samsung Galaxy s6 Edge','Voltas 155CY 1.2 Ton 5 Star Air SPlit Conditioner','Google Nexus', 'Gitanjali 100 Gm 24Kt 995 Bis Hallmarked Purity Plain Gold Bar'],
+        "valueBox":{
+          "text":'%data-custom-token',
+          "placement":'bottom'
         },
-        dataType: 'json',
-        success: function (sentiment) {
-          if (sentiment.sentiment) {
-            console.log("Return " + sentiment.sentiment);
-            console.log("Update the sentiment here");
-            //alert("A user with this username already exists.");
-          }
+        "background-color":"#fd625e"
+      },
+      {
+        "values":[0,0,0,0,0],
+        "decimals":2,
+        "stack":1,
+        "scales":"scale-x,scale-y",
+        'data-custom-token':[-5,-4,-6,-7,-1],
+        "valueBox":{
+          "text":'%data-custom-token',
+          "placement":'bottom',
+        },
+        "background-color":"#fd625e"
+      },
+      {
+        "values":[0,0,0,0,0],
+        "decimals":2,
+        "stack":2,
+        'data-custom-token':[5,4,6,7,1],
+        "scales":"scale-x-2,scale-y",
+        "valueBox":{
+          "text":'%data-custom-token',
+          "placement":'bottom-in'
+        },
+        "background-color":"#68d7c6"
+
+      },
+      {
+        "values":[5,4,6,7,1],
+        "decimals":2,
+        "stack":2,
+        "scales":"scale-x-2,scale-y",
+        'data-custom-token':['Insect And Mosquito Killer with NIght Lamp','Lenovo K3 Note 16GB', 'LED Projection Clock', 'Nokia 225 (black)', 'Nokia 225'],
+        "valueBox":{
+          "text":'%data-custom-token',
+          "placement":'bottom-out'
+        },
+        "background-color":"#68d7c6"
+      },
+    ]
+  };
+
+  zingchart.render({
+    id : 'myChart',
+    data : myConfig,
+    height: '100%',
+    width: '100%'
+  });
+
+  let oldSent = "";
+  $("#predBtn").click( () => {
+    let sentence = $("#sent").val();
+
+    if (sentence == null || oldSent == sentence) {
+      return;
+    }
+
+    $.ajax({
+      url: '/ajax/handle_sentiment/',
+      data: {
+        'sentence': sentence
+      },
+      dataType: 'json',
+      success: function (sentiment) {
+        if (sentiment.sentence) {
+          console.log("Return " + sentiment.sentence);
+          console.log("Return " + sentiment.pred);
+
+          console.log("Update the config file here to properly dispay the data");
         }
-      });
+      }
     });
+    oldSent = sentence;
 
-  </script>
+    // Rerender the graph.
+    zingchart.render({
+      id: 'myChart',
+      data: myConfig,
+      height: '100%',
+      width: '100%'
+    });
+  });
 
 
-  	<script>
-      //ZC.LICENSE=["b55b025e438fa8a98e32482b5f768ff5"];
-      var myConfig =
-	{
-	   "type":"hbar",
-	   "title":{
-	      "text":"Top & Bottom 5 products this month",
-	      "text-align":"center",
-	      "font-family":"arial",
-	      "font-color":"#5b5b5b",
-	      "font-size":"18px",
-	      "padding":"25px",
-	      "background-color":"none",
-	      "adjustLayout":true
-	   },
-	   "plotarea":{
-	      "adjustLayout":true,
-	      "margin":'dynamic'
-	   },
-	   "plot":{
-	     "valueBox":{
-	       "fontColor":"#000"
-	     },
-	     "animation": {
-	       "effect": 2,
-	       "method": 3,
-	       "speed": 800,
-	       "delay": 550
-	     },
-	     "stacked":true
-	   },
-	   "scale-x":{
-	      "offset-end":"55%",
-	      "offset-x":"50%",
-	      "alpha":1,
-	      "tick":{
-	         "alpha":0
-	      },
-	      "label":{
-	         "text":"Bottom 5 products by sales",
-	         "font-size": 14
-	      }
-	   },
-	   "scale-x-2":{
-	      "offset-start":"55%",
-	      "alpha":0,
-	      "tick":{
-	         "alpha":0
-	      },
-	      "label":{
-	         "text":"Top 5 products by sales",
-	         "font-size": 14
-	      },
-	   },
-	   "scale-y":{ },
-	   "scale-y-2":{ },
-	   "series":[
-	      {
-	         "values":[-5,-4,-6,-7,-1],
-	         "decimals":2,
-	         "stack":1,
-	         "scales":"scale-x,scale-y",
-	         'data-custom-token': ['Videocon 1.5 Ton Star Split', 'Samsung Galaxy s6 Edge','Voltas 155CY 1.2 Ton 5 Star Air SPlit Conditioner','Google Nexus', 'Gitanjali 100 Gm 24Kt 995 Bis Hallmarked Purity Plain Gold Bar'],
-	         "valueBox":{
-	            "text":'%data-custom-token',
-	            "placement":'bottom'
-	         },
-	         "background-color":"#fd625e"
-	      },
-	      {
-	         "values":[0,0,0,0,0],
-	         "decimals":2,
-	         "stack":1,
-	         "scales":"scale-x,scale-y",
- 	         'data-custom-token':[-5,-4,-6,-7,-1],
-	         "valueBox":{
-	            "text":'%data-custom-token',
-	            "placement":'bottom',
-	         },
-	         "background-color":"#fd625e"
-	      },
-	      {
-	         "values":[0,0,0,0,0],
-	         "decimals":2,
-	         "stack":2,
-	         'data-custom-token':[5,4,6,7,1],
- 	         "scales":"scale-x-2,scale-y",
-	         "valueBox":{
-	            "text":'%data-custom-token',
-	            "placement":'bottom-in'
-	         },
-	          "background-color":"#68d7c6"
+  // Clear the sentence box
+  $("#clearBtn").click( () => {
+    console.log("click clear")
+    $("#sent").val("");
+    console.log("Remove all the zing chart data here");
+  });
 
-	      },
-	      {
-	         "values":[5,4,6,7,1],
-	         "decimals":2,
-	         "stack":2,
-	         "scales":"scale-x-2,scale-y",
-	         'data-custom-token':['Insect And Mosquito Killer with NIght Lamp','Lenovo K3 Note 16GB', 'LED Projection Clock', 'Nokia 225 (black)', 'Nokia 225'],
-	         "valueBox":{
-	            "text":'%data-custom-token',
-	            "placement":'bottom-out'
-	         },
-          "background-color":"#68d7c6"
-	      },
-	   ]
-	};
-
-zingchart.render({
-	id : 'myChart',
-	data : myConfig,
-	height: '100%',
-	width: '100%'
-});</script>
+</script>
 
 {% endblock %}
 
