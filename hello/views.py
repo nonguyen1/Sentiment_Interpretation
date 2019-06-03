@@ -4,6 +4,10 @@ from django.http import HttpResponse, JsonResponse
 from .models import Greeting
 
 import pickle
+import logging
+import json
+
+logger = logging.getLogger(__name__)
 
 LIN_REG_SUPERVISED = "./hello/ML/lin_reg_sup.pkl"
 SENTIMENT = "./hello/ML/sentiment.pkl"
@@ -27,13 +31,14 @@ def handle_sentiment(request):
     sent_vec = parse_sentence(sentence)
     pred = model.predict(sent_vec)[0]
 
+
     # TODO(Nate): get all the weights from the model
-    # weights =
+    weights = get_sentence_weights(sent_vec)
 
     return JsonResponse({
         "sentence": sentence,
         "pred": str(pred),
-        "weights": "cool"
+        "weights": weights
         })
 
 def devs(request):
@@ -57,3 +62,15 @@ def parse_sentence(sent):
     ''' Clean up the sentence for sentiment analysis '''
     sentence_vec = sentiment.count_vect.transform([sent])
     return sentence_vec
+
+def get_sentence_weights(sent_vec):
+    weights = {}
+
+    #model.coef_
+    #sent_vec.indices
+    #sentiment.count_vect.inverse_transform(sent_vec) # what these indicies represent
+
+    for index,rep in zip(sent_vec.indices,
+            sentiment.count_vect.inverse_transform(sent_vec)[0]):
+        weights[str(rep)] = model.best_estimator_.coef_[0][index]
+    return weights
