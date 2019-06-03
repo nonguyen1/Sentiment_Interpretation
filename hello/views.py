@@ -5,7 +5,6 @@ from .models import Greeting
 
 import pickle
 import logging
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -72,5 +71,6 @@ def get_sentence_weights(sent_vec):
 
     for index,rep in zip(sent_vec.indices,
             sentiment.count_vect.inverse_transform(sent_vec)[0]):
-        weights[str(rep)] = model.best_estimator_.coef_[0][index]
-    return weights
+        weights[str(rep)] = model.best_estimator_.coef_[0][index];
+        #weights[model.best_estimator_.coef_[0][index]] = str(rep);
+    return weights;

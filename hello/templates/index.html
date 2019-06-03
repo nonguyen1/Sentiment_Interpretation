@@ -3,11 +3,20 @@
 
 {% block content %}
 
+<script src="https://cdn.jsdelivr.net/gh/ucsd-cse112/team-12-components/src/jj-components.min.js"></script>
+
 <h1>Model</h1>
 
 <!-- Add our jj-switch here to toggle between types of models -->
 
+<jj-switch></jj-switch>
+
 <br/>
+<p>
+I really really like this movie. The plot was great, the actors were great, it was great.
+</p>
+
+
 <!--
   <form id="sen" method="get">
   <br/>
@@ -19,6 +28,7 @@
 <br/>
 <input id="predBtn" type="submit" class="btn" value="Predict" name="prdBtn">
 <input id="clearBtn" type="submit" class="btn" value="Clear" name="clrBtn">
+<p id="prediction"></p>
 <br/>
 <br/>
 
@@ -33,6 +43,10 @@
     .zc-ref {
       display:none;
     }
+
+#prediction {
+  font-size: 2em;
+}
 </style>
 
 {% endblock %}
@@ -47,7 +61,7 @@
   var myConfig = {
     "type":"hbar",
     "title":{
-      "text":"Top & Bottom 5 products this month",
+      "text":"",
       "text-align":"center",
       "font-family":"arial",
       "font-color":"#5b5b5b",
@@ -98,55 +112,6 @@
     "scale-y":{ },
     "scale-y-2":{ },
     "series":[
-      {
-        "values":[-5,-4,-6,-7,-1],
-        "decimals":2,
-        "stack":1,
-        "scales":"scale-x,scale-y",
-        'data-custom-token': ['Videocon 1.5 Ton Star Split', 'Samsung Galaxy s6 Edge','Voltas 155CY 1.2 Ton 5 Star Air SPlit Conditioner','Google Nexus', 'Gitanjali 100 Gm 24Kt 995 Bis Hallmarked Purity Plain Gold Bar'],
-        "valueBox":{
-          "text":'%data-custom-token',
-          "placement":'bottom'
-        },
-        "background-color":"#fd625e"
-      },
-      {
-        "values":[0,0,0,0,0],
-        "decimals":2,
-        "stack":1,
-        "scales":"scale-x,scale-y",
-        'data-custom-token':[-5,-4,-6,-7,-1],
-        "valueBox":{
-          "text":'%data-custom-token',
-          "placement":'bottom',
-        },
-        "background-color":"#fd625e"
-      },
-      {
-        "values":[0,0,0,0,0],
-        "decimals":2,
-        "stack":2,
-        'data-custom-token':[5,4,6,7,1],
-        "scales":"scale-x-2,scale-y",
-        "valueBox":{
-          "text":'%data-custom-token',
-          "placement":'bottom-in'
-        },
-        "background-color":"#68d7c6"
-
-      },
-      {
-        "values":[5,4,6,7,1],
-        "decimals":2,
-        "stack":2,
-        "scales":"scale-x-2,scale-y",
-        'data-custom-token':['Insect And Mosquito Killer with NIght Lamp','Lenovo K3 Note 16GB', 'LED Projection Clock', 'Nokia 225 (black)', 'Nokia 225'],
-        "valueBox":{
-          "text":'%data-custom-token',
-          "placement":'bottom-out'
-        },
-        "background-color":"#68d7c6"
-      },
     ]
   };
 
@@ -173,23 +138,36 @@
       dataType: 'json',
       success: function (sentiment) {
         if (sentiment.sentence) {
-          console.log("Return " + sentiment.sentence);
-          console.log("Return " + sentiment.pred);
-          console.log(sentiment.weights);
+          //console.log("Return " + sentiment.sentence);
+          console.log("Return " + sentiment.pred); // 1 positive; 0 negative
+          let series2 = generate_config(sentiment.weights);
 
+          myConfig.series = series2;
+          console.log(series2);
           console.log("Update the config file here to properly dispay the data");
+          console.log(myConfig);
+          console.log("rendering graph");
+
+          // Rerender the graph.
+          zingchart.render({
+            id: 'myChart',
+            data: myConfig,
+            height: '100%',
+            width: '100%'
+          });
+          console.log("sentpred", sentiment.pred);
+          if (sentiment.pred == "1") {
+            document.getElementById('prediction').innerHTML = "Positive";
+            $("#prediction").css('color', 'green')
+          } else {
+            document.getElementById('prediction').innerHTML = "Negative";
+            $("#prediction").css('color', 'red')
+          }
         }
       }
     });
     oldSent = sentence;
 
-    // Rerender the graph.
-    zingchart.render({
-      id: 'myChart',
-      data: myConfig,
-      height: '100%',
-      width: '100%'
-    });
   });
 
 
@@ -198,7 +176,96 @@
     console.log("click clear")
     $("#sent").val("");
     console.log("Remove all the zing chart data here");
+
+    generate_config({});
+
   });
+
+  /**
+   * Generate the series data to be placed into myConfig.
+   * @param weights {object} word(s) with their corresponding weights.
+   * @retrun series {array} list of objects to place into myConfig.series.
+   */
+  function generate_config(weights) {
+    vals = Object.values(weights);
+    keys = Object.keys(weights);
+
+    let zipped = [];
+
+    // zip
+    for (let i=0; i<vals.length; i++) {
+        zipped.push({vals: vals[i], keys: keys[i]});
+    }
+
+    // Sort from smallest to largest
+    zipped.sort(function (x, y) { return x.vals - y.vals; });
+
+    let nzip = zipped.filter((zip) => zip.vals < 0); // zipped negative values.
+    let pzip = zipped.filter((zip) => zip.vals >= 0); // zipped positive values.
+    
+    console.log(nzip);
+    console.log(pzip);
+
+    let negVals = [];
+    let negKeys = [];
+
+    let posVals = [];
+    let posKeys = [];
+
+    // unzip negative
+    for (i=0; i<nzip.length; i++) {
+        let z = nzip[i];
+        negVals[i] = z.vals;
+        negKeys[i] = z.keys;
+    }
+
+    // unzip positive
+    for (i=0; i<pzip.length; i++) {
+        let z = pzip[i];
+        posVals[i] = z.vals;
+        posKeys[i] = z.keys;
+    }
+
+    console.log(negVals);
+    console.log(negKeys);
+
+    console.log(posVals);
+    console.log(posKeys);
+
+    // Build the series data to be displayed.
+
+    let series = [];
+
+
+    // Add the negative values.
+    series.push({
+        "values": negVals,
+        "decimals":2,
+        "stack":1,
+        "scales":"scale-x,scale-y",
+        'data-custom-token': negKeys,
+        "valueBox":{
+            "text":'%data-custom-token',
+            "placement":'bottom'
+        },
+        "background-color":"#fd625e"
+    })
+    // Add the positive values.
+    series.push({
+        "values": posVals,
+        "decimals":2,
+        "stack":2,
+        "scales":"scale-x-2,scale-y",
+        'data-custom-token': posKeys,
+        "valueBox":{
+            "text":'%data-custom-token',
+            "placement":'bottom'
+        },
+        "background-color":"#68d7c6"
+    })
+
+    return series;
+  }
 
 </script>
 
