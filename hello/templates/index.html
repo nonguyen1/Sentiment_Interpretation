@@ -123,6 +123,7 @@
 
   let oldSent = "";
   $("#predBtn").click( () => {
+    console.log('current value of the switch= ' + $('#jjswitch').checked);
     let sentence = $("#sent").val();
 
     if (sentence == null || oldSent == sentence) {
@@ -204,7 +205,6 @@
 
   //if switch is clicked clear the sentence box
   $("#jjswitch").click( () => {
-    console.log("switch was clicked");
     $("#sent").val("");
     generate_config({});
   });
