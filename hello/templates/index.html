@@ -5,7 +5,7 @@
 
 <script src="https://cdn.jsdelivr.net/gh/ucsd-cse112/team-12-components/src/jj-components.min.js"></script>
 
-<h1>Sentiment Model</h1>
+<h1 id="title">Sentiment Model</h1>
 
 <!-- Add our jj-switch here to toggle between types of models -->
 
@@ -207,6 +207,11 @@
   $("#jjswitch").click( () => {
     $("#sent").val("");
     generate_config({});
+    if ($('#title').text() == 'Sentiment Model') {
+      $('#title').text('Emotion Model');
+    } else {
+      $('#title').text('Sentiment Model');
+    }
   });
 
 
