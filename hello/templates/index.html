@@ -10,9 +10,8 @@
 <!-- Add our jj-switch here to toggle between types of models -->
 
 <br/>
-<jj-switch size="large" inactive-text="sentiment model" active-text="emotion
-  model" active-color="#dcdfe6" inactive-color="#409eff" size="large"
-  value="false"></jj-switch>
+<jj-switch id="jjswitch" size="large" inactive-text="sentiment model" active-text="emotion
+  model" active-color="#dcdfe6" inactive-color="#409eff" value="false"></jj-switch>
 <br/>
 
 <br/>
@@ -132,46 +131,82 @@
 
     // TODO: check the switch and call AJAX accordingly.
     // change title name to "sentiment" or "emotoion"
-    // clear input text.
+    // clear input text.\
+    // add margin to bottom.
 
-    $.ajax({
-      url: '/ajax/handle_sentiment/',
-      data: {
-        'sentence': sentence
-      },
-      dataType: 'json',
-      success: function (sentiment) {
-        if (sentiment.sentence) {
-          //console.log("Return " + sentiment.sentence);
-          console.log("Return " + sentiment.pred); // 1 positive; 0 negative
-          let series2 = generate_config(sentiment.weights);
+    if ($('#jjswitch').checked) {
+      console.log('switch is checked');
 
-          myConfig.series = series2;
-          console.log(series2);
-          console.log("Update the config file here to properly dispay the data");
-          console.log(myConfig);
-          console.log("rendering graph");
-
-          // Rerender the graph.
-          zingchart.render({
-            id: 'myChart',
-            data: myConfig,
-            height: '100%',
-            width: '100%'
-          });
-          console.log("sentpred", sentiment.pred);
-          if (sentiment.pred == "1") {
-            document.getElementById('prediction').innerHTML = "Positive";
-            $("#prediction").css('color', 'green')
-          } else {
-            document.getElementById('prediction').innerHTML = "Negative";
-            $("#prediction").css('color', 'red')
+      $.ajax({
+        url: '/ajax/handle_emotion/',
+        data: {
+          'sentence': sentence
+        },
+        dataType: 'json',
+        success: function (sentiment) {
+          if (sentiment.sentence) {
+            let series2 = generate_config(sentiment.weights);
+            myConfig.series = series2;
+            // Rerender the graph.
+            zingchart.render({
+              id: 'myChart',
+              data: myConfig,
+              height: '100%',
+              width: '100%'
+            });
+            console.log("sentpred", sentiment.pred);
+            document.getElementById('prediction').innerHTML = sentiment.pred;
+            $("#prediction").css('color', 'black');
           }
         }
-      }
-    });
+      });
+    } else {
+      $.ajax({
+        url: '/ajax/handle_sentiment/',
+        data: {
+          'sentence': sentence
+        },
+        dataType: 'json',
+        success: function (sentiment) {
+          if (sentiment.sentence) {
+            //console.log("Return " + sentiment.sentence);
+            console.log("Return " + sentiment.pred); // 1 positive; 0 negative
+            let series2 = generate_config(sentiment.weights);
+
+            myConfig.series = series2;
+            console.log(series2);
+            console.log("Update the config file here to properly dispay the data");
+            console.log(myConfig);
+            console.log("rendering graph");
+
+            // Rerender the graph.
+            zingchart.render({
+              id: 'myChart',
+              data: myConfig,
+              height: '100%',
+              width: '100%'
+            });
+            console.log("sentpred", sentiment.pred);
+            if (sentiment.pred == "1") {
+              document.getElementById('prediction').innerHTML = "Positive";
+              $("#prediction").css('color', 'green')
+            } else {
+              document.getElementById('prediction').innerHTML = "Negative";
+              $("#prediction").css('color', 'red')
+            }
+          }
+        }
+      });
+    }
     oldSent = sentence;
 
+  });
+
+  //if switch is clicked clear the sentence box
+  $("#jjswitch").click( () => {
+    console.log("switch was clicked");
+    $("#sent").val("");
+    generate_config({});
   });
 
 
