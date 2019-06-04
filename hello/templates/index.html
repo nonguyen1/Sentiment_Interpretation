@@ -123,7 +123,7 @@
 
   let oldSent = "";
   $("#predBtn").click( () => {
-    console.log('current value of the switch= ' + $('#jjswitch').value);
+    console.log('current value of the switch= ' + $('#jjswitch').attr('value'));
     let sentence = $("#sent").val();
 
     if (sentence == null || oldSent == sentence) {
@@ -135,7 +135,7 @@
     // clear input text.\
     // add margin to bottom.
 
-    if ($('#jjswitch').value == "false" || $('#jjswitch').value == false) {
+    if ($('#jjswitch').attr('value') == "false" || $('#jjswitch').attr('value') == false) {
       console.log('switch is checked');
 
       $.ajax({
