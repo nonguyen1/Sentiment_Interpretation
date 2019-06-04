@@ -207,7 +207,8 @@
   $("#jjswitch").click( () => {
     $("#sent").val("");
     generate_config({});
-    if ($('#title').text() == 'Sentiment Model') {
+    console.log($('#title').text());
+    if ($('#jjswitch').attr('value') == 'true'||$('#jjswitch').attr('value') == true) {
       $('#title').text('Emotion Model');
     } else {
       $('#title').text('Sentiment Model');
