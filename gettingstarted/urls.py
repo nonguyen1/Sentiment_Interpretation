@@ -19,6 +19,6 @@ urlpatterns = [
     path("db/", hello.views.db, name="db"),
     path("devs/", hello.views.devs, name="devs"),
     path("admin/", admin.site.urls),
-    path("ajax/handle_sentiment/", hello.views.handle_sentiment,
-        name="handle_sentiment"),
+    path("ajax/handle_sentiment/", hello.views.handle_sentiment, name="handle_sentiment"),
+    path("ajax/handle_emotion/", hello.views.handle_emotion, name="handle_emotion"),
 ]
