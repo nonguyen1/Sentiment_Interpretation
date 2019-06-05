@@ -29,10 +29,13 @@
 <input id="predBtn" type="submit" class="btn" value="Predict" name="prdBtn">
 <input id="clearBtn" type="submit" class="btn" value="Clear" name="clrBtn">
 <p id="prediction"></p>
+<p id="prob"></p>
 <br/>
 <br/>
 
 <div disable id="myChart"><a class="zc-ref" href="https://www.zingchart.com">Powered by ZingChart</a></div>
+<br/>
+<p id="bias"></p>
 
 <style>
 #myChart {
@@ -180,6 +183,10 @@
     width: '100%'
   });
 
+  // Some last minute styling.
+  $("#prob").css('color', 'blue')
+  $("#bias").css('color', 'blue')
+
   let oldSent = "";
   $("#predBtn").click( () => {
     console.log('current value of the switch= ' + $('#jjswitch').attr('value'));
@@ -216,6 +223,12 @@
             console.log("sentpred", sentiment.pred);
             document.getElementById('prediction').innerHTML = sentiment.pred;
             $("#prediction").css('color', 'black');
+
+            console.debug("updating the probs to ", sentiment.probs);
+            document.getElementById('prob').innerHTML = "probs: " + sentiment.probs;
+
+            console.log("bias:", sentiment.bias);
+            document.getElementById('bias').innerHTML = "bias: " + sentiment.bias;
           }
         }
       });
@@ -253,6 +266,11 @@
               document.getElementById('prediction').innerHTML = "Negative";
               $("#prediction").css('color', 'red')
             }
+            console.debug("updating the probs to ", sentiment.probs);
+            document.getElementById('prob').innerHTML = "probs: " + sentiment.probs;
+
+            console.log("udating the bias to", sentiment.bias);
+            document.getElementById('bias').innerHTML = "bias: " + sentiment.bias;
           }
         }
       });
@@ -264,16 +282,17 @@
   //if switch is clicked clear the sentence box
   $("#jjswitch").click( () => {
     $("#sent").val("");
-    myConfig.series = [];
-    // Rerender the graph.
-    console.log("render and empty graph");
 
-    zingchart.render({
-      id: 'myChart',
-      data: myConfig,
-      height: '100%',
-      width: '100%'
-    });
+//    myConfig.series = [];
+//    // Rerender the graph.
+//    console.log("render and empty graph");
+//
+//    zingchart.render({
+//      id: 'myChart',
+//      data: myConfig,
+//      height: '100%',
+//      width: '100%'
+//    });
 
     console.log($('#title').text());
 
@@ -282,6 +301,8 @@
     } else {
       $('#title').text('Sentiment Model');
     }
+    clearText();
+    clearGraph();
   });
 
 
@@ -290,16 +311,8 @@
     console.log("click clear")
     $("#sent").val("");
     console.log("Remove all the zing chart data here");
-
-    myConfig.series = [];
-    // Rerender the graph.
-    zingchart.render({
-      id: 'myChart',
-      data: myConfig,
-      height: '100%',
-      width: '100%'
-    });
-
+    clearText();
+    clearGraph();
   });
 
   function generate_config_emotion(weights) {
@@ -309,7 +322,8 @@
     console.log('keys: ' + keys);
 
     let colors = ['#fd625e', '#68d7c6', '#42f45f', '#f441ee', '#f4e541'];
-    let classNames = ["neutral", "sad", "happy", "hate", "anger"];
+    //let classNames = ["neutral", "sad", "happy", "hate", "anger"];
+    let classNames = ["anger", "happy", "hate", "neutral", "anger"];
     let series = [];
     let ks = [];
     let vs = [];
@@ -458,6 +472,27 @@
     })
 
     return series;
+  }
+
+  function clearText() {
+    document.getElementById('prediction').innerHTML = "";
+    document.getElementById('prob').innerHTML = "";
+    document.getElementById('bias').innerHTML = "";
+  }
+
+  function clearGraph() {
+    myConfig.series = [];
+    $('#myChart').css('height', "500px");
+    // Rerender the graph.
+    console.log("render and empty graph");
+
+    zingchart.render({
+      id: 'myChart',
+      data: myConfig,
+      height: '100%',
+      width: '100%'
+    });
+
   }
 
 </script>

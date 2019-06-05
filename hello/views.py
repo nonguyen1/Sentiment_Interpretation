@@ -37,11 +37,15 @@ def handle_sentiment(request):
     pred = model.predict(sent_vec)[0]
 
     weights = get_sentence_weights(sent_vec)
+    class_bias = model.best_estimator_.intercept_ # Biases for each class.
+    probs = model.predict_proba(sent_vec)[0]
 
     return JsonResponse({
         "sentence": sentence,
         "pred": str(pred),
-        "weights": weights
+        "weights": weights,
+        "bias": str(class_bias),
+        "probs": str(probs)
         })
 
 def handle_emotion(request):
@@ -53,6 +57,9 @@ def handle_emotion(request):
     # Vector transform for the emotion
     sent_vec = emotion_sentiment.transform([sentence])
     pred = emotion_model.predict(sent_vec)[0]
+
+    class_bias = emotion_model.intercept_ # Biases for each class.
+    probs = emotion_model.predict_proba(sent_vec)[0]
 
     weights = {}
 
@@ -69,7 +76,9 @@ def handle_emotion(request):
     return JsonResponse({
         "sentence": sentence,
         "pred": str(pred),
-        "weights": weights
+        "weights": weights,
+        "bias": str(class_bias),
+        "probs": str(probs)
         })
 
 def devs(request):
