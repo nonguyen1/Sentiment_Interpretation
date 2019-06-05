@@ -6,6 +6,7 @@
 <script src="https://cdn.jsdelivr.net/gh/ucsd-cse112/team-12-components/src/jj-components.min.js"></script>
 
 <h1 id="title" style="">Sentiment Data</h1>
+<jj-switch id="jjswitch" size="large" inactive-text="sentiment model" active-text="emotion model" active-color="#dcdfe6" inactive-color="#409eff" value="false">
 <h4> Search for a phrase in the dataset</h4>
 
 <br/>
@@ -54,10 +55,19 @@
       <b style='color:rgb(230, 130, 130)'>Negative:</b> ${neg}`;
   }
 
+  function setScores(angry, hate, sad, happy, neutral) {
+    document.getElementById('stats').innerHTML = 
+      `<b style="color: rgb(230, 130, 130)">Angry:</b> ${angry} 
+      <b style="color: rgb(90, 200, 100)">'>Happy:</b> ${happy}
+      <b style="color: rgb(244, 223, 65)">'>Sad:</b> ${sad}
+      <b style="color: rgb(204, 204, 204)">'>Neutral:</b> ${neutral}
+      <b style="color: rgb(66, 101, 244)">'>Hate:</b> ${hate}`;
+  }
+
   /*
    * Print out the sentences.
    */
-  function handlePrint(data, label, phrase) {
+  function handlePrint(data, label, phrase, isEmotion) {
     if (data.length == 0) {
       $('#sentences').append('<h4>Phrase not found in data</h4>');
       return
@@ -66,23 +76,51 @@
     let phrase_len = phrase.length;
     console.log("phrase.length:", phrase.length);
     let pos = 0;
+    let happy = 0;
+    let sad = 0;
+    let hate = 0;
+    let angry = 0;
+    let neutral = 0;
+
     for (let i = 0; i < data.length; i++) {
       //console.log(data[i]);
       let index = data[i].search(phrase);
       let l = label[i];
       data[i] = [data[i].slice(0,index), "<b>", data[i].slice(index)].join('');
       data[i] = [data[i].slice(0, index+phrase_len + 3), "</b>", data[i].slice(index+phrase_len + 3)].join('');
-      if (l == "NEGATIVE") {
+      if (l == 'NEGATIVE') {
         $('#sentences').append('<p class="sent_info" style="background-color: rgb(230, 130, 130)">' + data[i] + '</p>');
-      } else {
+      } else if(l == 'POSITIVE') {
         pos += 1;
         $('#sentences').append('<p class="sent_info" style="background-color: rgb(90, 200, 100)">' + data[i] + '</p>');
-      }
+      } if (l == "angry") {
+        angry += 1;
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(230, 130, 130)">' + data[i] + '</p>');
+      } else if (l == 'happy') {
+        happy += 1;
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(90, 200, 100)">' + data[i] + '</p>');
+      } else if (l == 'sad') {
+        sad += 1;
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(244, 223, 65)">' + data[i] + '</p>');
+      } else if (l == 'neutral') {
+        neutral += 1;
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(204, 204, 204)">' + data[i] + '</p>');
+      } else {
+        hate += 1;
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(66, 101, 244)">' + data[i] + '</p>');
+      } 
     }
 
-    setPosNegText(pos, data.length - pos);
+    if (isEmotion == true) {
+      setScores(angry, hate, sad, happy, neutral);
+    } else {
+      setPosNegText(pos, data.length - pos);
+    }
+    
 
   }
+
+
 
   let oldPhrase = "";
   $("#findBtn").click( () => {
@@ -97,20 +135,37 @@
 
     console.debug(`Searching for phrase '${phrase}' in the sentiment dataset`);
     clearSentences();
-    $.ajax({
-      url: '/ajax/handle_phrase/',
-      data: {
-        'phrase': phrase
-      },
-      dataType: 'json',
-      success: function (sentiment) {
-        let data = sentiment.data;
-        let labels = sentiment.label;
-        console.log(labels);
-        handlePrint(data, labels, phrase);
-        //console.debug(sentiment.data);
-      }
-    });
+    if ($('#jjswitch').attr('value') == 'true'||$('#jjswitch').attr('value') == true) {
+      $.ajax({
+        url: '/ajax/handle_phrase_emotion/',
+        data: {
+          'phrase': phrase
+        },
+        dataType: 'json',
+        success: function (sentiment) {
+          let data = sentiment.data;
+          let labels = sentiment.label;
+          console.log(labels);
+          handlePrint(data, labels, phrase, true);
+          //console.debug(sentiment.data);
+        }
+      });
+    } else {
+      $.ajax({
+        url: '/ajax/handle_phrase/',
+        data: {
+          'phrase': phrase
+        },
+        dataType: 'json',
+        success: function (sentiment) {
+          let data = sentiment.data;
+          let labels = sentiment.label;
+          console.log(labels);
+          handlePrint(data, labels, phrase, false);
+          //console.debug(sentiment.data);
+        }
+      });
+    }
     oldPhrase = phrase;
   });
 
@@ -123,6 +178,22 @@
 
 
 setPosNegText(0,0);
+
+$("#jjswitch").click( () => {
+  if ($('#jjswitch').attr('value') == 'true'||$('#jjswitch').attr('value') == true) {
+    $('#title').text('Emotion Data');
+    clearSentences();
+    $("#sent").val("");
+    setPosNegText(0,0);
+
+  } else {
+    $('#title').text('Sentiment Data');
+    $('#title').text('Sentiment Data');
+    clearSentences();
+    $("#sent").val("");
+    setPosNegText(0,0);
+  }
+});
 </script>
 
 {% endblock %}
