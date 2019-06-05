@@ -70,6 +70,7 @@
       "background-color":"none",
       "adjustLayout":true
     },
+    legend: {},
     "plotarea":{
       "adjustLayout":true,
       "margin":'dynamic'
@@ -114,6 +115,64 @@
     "series":[]
   };
 
+  // Config used for the emotion prediction of 5 classes.
+  var myConfig2 = {
+    "type":"hbar",
+    "title":{
+      "text":"",
+      "text-align":"center",
+      "font-family":"arial",
+      "font-color":"#5b5b5b",
+      "font-size":"18px",
+      "padding":"25px",
+      "background-color":"none",
+      "adjustLayout":true
+    },
+    "plotarea":{
+      "adjustLayout":true,
+      "margin":'dynamic'
+    },
+    legend: {},
+    "plot":{
+      "valueBox":{
+        "fontColor":"#000"
+      },
+      "animation": {
+        "effect": 2,
+        "method": 3,
+        "speed": 800,
+        "delay": 550
+      },
+      "stacked":true
+    },
+    "scale-x":{
+      "offset-end":"0%",
+      "offset-x":"0%",
+      "alpha":1,
+      "tick":{
+        "alpha":0
+      },
+      "label":{
+        "text":"",
+        "font-size": 14
+      }
+    },
+    "scale-x-2":{
+      "offset-start":"0%",
+      "alpha":0,
+      "tick":{
+        "alpha":0
+      },
+      "label":{
+        "text":"",
+        "font-size": 14
+      },
+    },
+    "scale-y":{ },
+    "scale-y-2":{ },
+    "series":[]
+  };
+
   zingchart.render({
     id : 'myChart',
     data : myConfig,
@@ -130,7 +189,7 @@
       return;
     }
 
-    // TODO: check to see why the ajax is not being called correctly.
+    // DONE: check to see why the ajax is not being called correctly.
 
     if ($('#jjswitch').attr('value') == "true" || $('#jjswitch').attr('value') == true) {
       // this 
@@ -146,11 +205,11 @@
           console.log("SUCCES EMOTION");
           if (sentiment.sentence) {
             let series2 = generate_config_emotion(sentiment.weights);
-            myConfig.series = series2;
+            myConfig2.series = series2;
             // Rerender the graph.
             zingchart.render({
               id: 'myChart',
-              data: myConfig,
+              data: myConfig2,
               height: '100%',
               width: '100%'
             });
@@ -205,8 +264,12 @@
   //if switch is clicked clear the sentence box
   $("#jjswitch").click( () => {
     $("#sent").val("");
-    generate_config({});
+    myConfig.series = [];
+    myConfig2.series = [];
+    //generate_config({});
+
     console.log($('#title').text());
+
     if ($('#jjswitch').attr('value') == 'true'||$('#jjswitch').attr('value') == true) {
       $('#title').text('Emotion Model');
     } else {
@@ -226,12 +289,13 @@
   });
 
   function generate_config_emotion(weights) {
-    vals = Object.values(weights);
-    keys = Object.keys(weights);
+    let vals = Object.values(weights);
+    let keys = Object.keys(weights);
     console.log('vals: ' + vals);
     console.log('keys: ' + keys);
 
     let colors = ['#fd625e', '#68d7c6', '#42f45f', '#f441ee', '#f4e541'];
+    let classNames = ["neutral", "sad", "happy", "hate", "anger"];
     let series = [];
     let ks = [];
     let vs = [];
@@ -267,8 +331,10 @@
     console.log(ks);
     console.log('vs');
     console.log(vs);
+
     for (let i = 0; i < ks.length; ++i) {
       series.push({
+        "text": classNames[i],
         "values": vs[i],
         "decimals":2,
         "stack":i,
@@ -281,6 +347,13 @@
         "background-color": colors[i]
       });
     }
+
+    // Change the height of the chart for 100px per word.
+
+    console.log("Add css height change to the chart");
+    $('#myChart').css('height', (keys.length * 80) + "px");
+    
+
     console.log('returning: ');
     console.log(series);
     return series;
@@ -292,8 +365,8 @@
    * @retrun series {array} list of objects to place into myConfig.series.
    */
   function generate_config(weights) {
-    vals = Object.values(weights);
-    keys = Object.keys(weights);
+    let vals = Object.values(weights);
+    let keys = Object.keys(weights);
 
     let zipped = [];
 
@@ -341,9 +414,11 @@
 
     let series = [];
 
+    $('#myChart').css('height', (keys.length * 50) + "px");
 
     // Add the negative values.
     series.push({
+        "text": "Negative Weights",
         "values": negVals,
         "decimals":2,
         "stack":1,
@@ -357,6 +432,7 @@
     })
     // Add the positive values.
     series.push({
+        "text": "Positive Weights",
         "values": posVals,
         "decimals":2,
         "stack":2,
