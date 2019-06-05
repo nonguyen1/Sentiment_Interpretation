@@ -6,7 +6,7 @@
 <script src="https://cdn.jsdelivr.net/gh/ucsd-cse112/team-12-components/src/jj-components.min.js"></script>
 
 <h1 id="title" style="">Sentiment Data</h1>
-<jj-switch id="jjswitch" size="large" inactive-text="sentiment model" active-text="emotion model" active-color="#dcdfe6" inactive-color="#409eff" value="false">
+<jj-switch id="jjswitch" size="large" inactive-text="sentiment model" active-text="emotion model" active-color="#dcdfe6" inactive-color="#409eff" value="false"></jj-switch>
 <h4> Search for a phrase in the dataset</h4>
 
 <br/>
@@ -58,10 +58,10 @@
   function setScores(angry, hate, sad, happy, neutral) {
     document.getElementById('stats').innerHTML = 
       `<b style="color: rgb(230, 130, 130)">Angry:</b> ${angry} 
-      <b style="color: rgb(90, 200, 100)">'>Happy:</b> ${happy}
-      <b style="color: rgb(244, 223, 65)">'>Sad:</b> ${sad}
-      <b style="color: rgb(204, 204, 204)">'>Neutral:</b> ${neutral}
-      <b style="color: rgb(66, 101, 244)">'>Hate:</b> ${hate}`;
+      <b style="color: rgb(90, 200, 100)">Happy:</b> ${happy}
+      <b style="color: rgb(244, 223, 65)">Sad:</b> ${sad}
+      <b style="color: rgb(204, 204, 204)">Neutral:</b> ${neutral}
+      <b style="color: rgb(66, 101, 244)">Hate:</b> ${hate}`;
   }
 
   /*
