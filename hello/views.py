@@ -125,9 +125,6 @@ def handle_phrase_emotion(request):
     data += d
     label += l
 
-    d, l = find_phrase(phrase, emotion_sentiment.dev_data, emotion_sentiment.dev_labels)
-    data += d
-    label += l
     return JsonResponse({
         "data": data,
         "label": label
