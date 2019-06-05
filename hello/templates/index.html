@@ -265,8 +265,15 @@
   $("#jjswitch").click( () => {
     $("#sent").val("");
     myConfig.series = [];
-    myConfig2.series = [];
-    //generate_config({});
+    // Rerender the graph.
+    console.log("render and empty graph");
+
+    zingchart.render({
+      id: 'myChart',
+      data: myConfig,
+      height: '100%',
+      width: '100%'
+    });
 
     console.log($('#title').text());
 
@@ -284,7 +291,14 @@
     $("#sent").val("");
     console.log("Remove all the zing chart data here");
 
-    generate_config({});
+    myConfig.series = [];
+    // Rerender the graph.
+    zingchart.render({
+      id: 'myChart',
+      data: myConfig,
+      height: '100%',
+      width: '100%'
+    });
 
   });
 
@@ -347,9 +361,7 @@
         "background-color": colors[i]
       });
     }
-
     // Change the height of the chart for 100px per word.
-
     console.log("Add css height change to the chart");
     $('#myChart').css('height', (keys.length * 80) + "px");
     
@@ -414,7 +426,7 @@
 
     let series = [];
 
-    $('#myChart').css('height', (keys.length * 50) + "px");
+    $('#myChart').css('height', (keys.length * 30) + "px");
 
     // Add the negative values.
     series.push({
