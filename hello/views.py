@@ -116,6 +116,23 @@ def handle_phrase(request):
         "label": label
         })
 
+def handle_phrase_emotion(request):
+    data = []
+    label = []
+
+    phrase = request.GET.get('phrase', "asdfasdfasdfa")
+    d, l = find_phrase(phrase, sentiment.train_data, sentiment.train_labels)
+    data += d
+    label += l
+
+    d, l = find_phrase(phrase, emotion_sentiment.dev_data, emotion_sentiment.dev_labels)
+    data += d
+    label += l
+    return JsonResponse({
+        "data": data,
+        "label": label
+        })
+
 # ------------------------------------------
 # Helper functions for sentiment analysis. Should move to external *.py file in
 # the future.

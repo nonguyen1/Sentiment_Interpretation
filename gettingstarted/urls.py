@@ -23,4 +23,5 @@ urlpatterns = [
     path("ajax/handle_emotion/", hello.views.handle_emotion, name="handle_emotion"),
     path("sent_data/", hello.views.sent_data, name="sent_data"),
     path("ajax/handle_phrase/", hello.views.handle_phrase, name="handle_phrase"),
+    path("ajax/handle_phrase_emotion/", hello.views.handle_phrase_emotion, name="handle_phrase_emotion"),
 ]
