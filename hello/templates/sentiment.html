@@ -48,41 +48,46 @@
     document.getElementById('sentences').innerHTML = "";
   }
 
+  function setPosNegText(pos, neg) {
+    document.getElementById('stats').innerHTML = 
+      `<b style='color:rgb(90, 200, 100)'>Positive:</b> ${pos} 
+      <b style='color:rgb(230, 130, 130)'>Negative:</b> ${neg}`;
+  }
+
   /*
    * Print out the sentences.
    */
-function handlePrint(data, label, phrase) {
-  if (data.length == 0) {
-    $('#sentences').append('<h4>Phrase not found in data</h4>');
-    return
-  }
-
-  let phrase_len = phrase.length;
-  console.log("phrase.length:", phrase.length);
-  let pos = 0;
-  for (let i = 0; i < data.length; i++) {
-    //console.log(data[i]);
-    let index = data[i].search(phrase);
-    let l = label[i];
-    data[i] = [data[i].slice(0,index), "<b>", data[i].slice(index)].join('');
-    data[i] = [data[i].slice(0, index+phrase_len + 3), "</b>", data[i].slice(index+phrase_len + 3)].join('');
-    if (l == "NEGATIVE") {
-      $('#sentences').append('<p class="sent_info" style="background-color: rgb(230, 130, 130)">' + data[i] + '</p>');
-    } else {
-      pos += 1;
-      $('#sentences').append('<p class="sent_info" style="background-color: rgb(90, 200, 100)">' + data[i] + '</p>');
+  function handlePrint(data, label, phrase) {
+    if (data.length == 0) {
+      $('#sentences').append('<h4>Phrase not found in data</h4>');
+      return
     }
+
+    let phrase_len = phrase.length;
+    console.log("phrase.length:", phrase.length);
+    let pos = 0;
+    for (let i = 0; i < data.length; i++) {
+      //console.log(data[i]);
+      let index = data[i].search(phrase);
+      let l = label[i];
+      data[i] = [data[i].slice(0,index), "<b>", data[i].slice(index)].join('');
+      data[i] = [data[i].slice(0, index+phrase_len + 3), "</b>", data[i].slice(index+phrase_len + 3)].join('');
+      if (l == "NEGATIVE") {
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(230, 130, 130)">' + data[i] + '</p>');
+      } else {
+        pos += 1;
+        $('#sentences').append('<p class="sent_info" style="background-color: rgb(90, 200, 100)">' + data[i] + '</p>');
+      }
+    }
+
+    setPosNegText(pos, data.length - pos);
+
   }
-
-  document.getElementById('stats').innerHTML = 
-    `<b style='color:rgb(90, 200, 100)'>Positive:</b> ${pos} 
-    <b style='color:rgb(230, 130, 130)'>Negative:</b> ${data.length - pos}`;
-
-}
 
   let oldPhrase = "";
   $("#findBtn").click( () => {
 
+    setPosNegText(0, 0);
     console.debug("I click button");
     let phrase = $("#phrase").val();
 
@@ -113,9 +118,11 @@ function handlePrint(data, label, phrase) {
     console.debug("click clear btn");
     clearSentences();
     $("#sent").val("");
+    setPosNegText(0,0);
   });
 
 
+setPosNegText(0,0);
 </script>
 
 {% endblock %}
