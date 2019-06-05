@@ -184,8 +184,8 @@
   });
 
   // Some last minute styling.
-  $("#prob").css('color', 'blue')
-  $("#bias").css('color', 'blue')
+  $("#prob").css('color', 'rgb(86, 159, 248)');
+  $("#bias").css('color', 'rgb(86, 159, 248)');
 
   let oldSent = "";
   $("#predBtn").click( () => {
@@ -225,10 +225,10 @@
             $("#prediction").css('color', 'black');
 
             console.debug("updating the probs to ", sentiment.probs);
-            document.getElementById('prob').innerHTML = "probs: " + sentiment.probs;
+            document.getElementById('prob').innerHTML = "Probs: " + sentiment.probs;
 
             console.log("bias:", sentiment.bias);
-            document.getElementById('bias').innerHTML = "bias: " + sentiment.bias;
+            document.getElementById('bias').innerHTML = "Bias: " + sentiment.bias;
           }
         }
       });
@@ -267,10 +267,10 @@
               $("#prediction").css('color', 'red')
             }
             console.debug("updating the probs to ", sentiment.probs);
-            document.getElementById('prob').innerHTML = "probs: " + sentiment.probs;
+            document.getElementById('prob').innerHTML = "Probs: " + sentiment.probs;
 
             console.log("udating the bias to", sentiment.bias);
-            document.getElementById('bias').innerHTML = "bias: " + sentiment.bias;
+            document.getElementById('bias').innerHTML = "Bias: " + sentiment.bias;
           }
         }
       });
