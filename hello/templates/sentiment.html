@@ -87,13 +87,13 @@
   let oldPhrase = "";
   $("#findBtn").click( () => {
 
-    setPosNegText(0, 0);
     console.debug("I click button");
     let phrase = $("#phrase").val();
 
     if (phrase == null || oldPhrase == phrase) {
       return;
     }
+    setPosNegText(0, 0);
 
     console.debug(`Searching for phrase '${phrase}' in the sentiment dataset`);
     clearSentences();

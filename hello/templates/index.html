@@ -323,7 +323,7 @@
 
     let colors = ['#fd625e', '#68d7c6', '#42f45f', '#f441ee', '#f4e541'];
     //let classNames = ["neutral", "sad", "happy", "hate", "anger"];
-    let classNames = ["anger", "happy", "hate", "neutral", "anger"];
+    let classNames = ["anger", "happy", "hate", "neutral", "sad"];
     let series = [];
     let ks = [];
     let vs = [];
@@ -338,7 +338,7 @@
         temp.push({vals: vals[i][j], keys: keys[i]});
       }
 
-      temp.sort(function (x, y) { return x.vals - y.vals; });
+      //temp.sort(function (x, y) { return x.vals - y.vals; });
       // console.log('temp is: ');
       // console.log(temp);
       // let vs = [];
