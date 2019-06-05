@@ -130,12 +130,10 @@
       return;
     }
 
-    // TODO: check the switch and call AJAX accordingly.
-    // change title name to "sentiment" or "emotoion"
-    // clear input text.\
-    // add margin to bottom.
+    // TODO: check to see why the ajax is not being called correctly.
 
     if ($('#jjswitch').attr('value') == "true" || $('#jjswitch').attr('value') == true) {
+      // this 
       console.log('switch is checked');
 
       $.ajax({
@@ -147,7 +145,7 @@
         success: function (sentiment) {
           console.log("SUCCES EMOTION");
           if (sentiment.sentence) {
-            let series2 = generate_config(sentiment.weights);
+            let series2 = generate_config_emotion(sentiment.weights);
             myConfig.series = series2;
             // Rerender the graph.
             zingchart.render({
@@ -226,6 +224,67 @@
     generate_config({});
 
   });
+
+  function generate_config_emotion(weights) {
+    vals = Object.values(weights);
+    keys = Object.keys(weights);
+    console.log('vals: ' + vals);
+    console.log('keys: ' + keys);
+
+    let colors = ['#fd625e', '#68d7c6', '#42f45f', '#f441ee', '#f4e541'];
+    let series = [];
+    let ks = [];
+    let vs = [];
+    for (let i = 0; i < 5; ++i) {
+      ks[i] = [];
+      vs[i] = [];
+    }
+    // zip
+    for (let i=0; i<vals.length; i++) {
+      let temp = [];
+      for (let j = 0; j < vals[i].length; ++j) {
+        temp.push({vals: vals[i][j], keys: keys[i]});
+      }
+
+      temp.sort(function (x, y) { return x.vals - y.vals; });
+      // console.log('temp is: ');
+      // console.log(temp);
+      // let vs = [];
+      // let ks = [];
+
+      for (let k = 0; k < temp.length; k++) {
+        let ob = temp[k];
+        vs[k].push(ob.vals);
+        ks[k].push(ob.keys);
+
+      }
+      // console.log('ks: ');
+      // console.log(ks);
+      // console.log('vs: ');
+      // console.log(vs);
+    }
+    console.log('ks');
+    console.log(ks);
+    console.log('vs');
+    console.log(vs);
+    for (let i = 0; i < ks.length; ++i) {
+      series.push({
+        "values": vs[i],
+        "decimals":2,
+        "stack":i,
+        "scales":"scale-x,scale-y",
+        'data-custom-token': ks[i],
+        "valueBox":{
+            "text":'%data-custom-token',
+            "placement":'bottom'
+        },
+        "background-color": colors[i]
+      });
+    }
+    console.log('returning: ');
+    console.log(series);
+    return series;
+  }
 
   /**
    * Generate the series data to be placed into myConfig.
