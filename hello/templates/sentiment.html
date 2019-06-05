@@ -1,0 +1,121 @@
+
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/gh/ucsd-cse112/team-12-components/src/jj-components.min.js"></script>
+
+<h1 id="title" style="">Sentiment Data</h1>
+<h4> Search for a phrase in the dataset</h4>
+
+<br/>
+
+<!--
+  <form id="sen" method="get">
+  <br/>
+  <input id="myBtn" type="submit" class="btn" value="Click" name="mybtn">
+  </form>
+-->
+<input class="input_sen" id="phrase" autocomplete="off" type="text" value="" placeholder="Input your phrase here" name="mytextbox"/>
+<br/>
+<br/>
+<input id="findBtn" type="submit" class="btn" value="Find" name="findBtn">
+<input id="clearBtn" type="submit" class="btn" value="Clear" name="clrBtn">
+
+<br/>
+<p id="stats"></p>
+
+<div id="sentences"></div>
+<br/>
+
+<style>
+.sent_info {
+  border-width: 2px;
+  margin-top: 20px;
+  padding: 5px;
+}
+
+
+</style>
+
+
+<script>
+  /*
+   * Clear the sentences
+   */
+  function clearSentences() {
+    console.log("clear sentences");
+    document.getElementById('sentences').innerHTML = "";
+  }
+
+  /*
+   * Print out the sentences.
+   */
+function handlePrint(data, label, phrase) {
+  if (data.length == 0) {
+    $('#sentences').append('<h4>Phrase not found in data</h4>');
+    return
+  }
+
+  let phrase_len = phrase.length;
+  console.log("phrase.length:", phrase.length);
+  let pos = 0;
+  for (let i = 0; i < data.length; i++) {
+    //console.log(data[i]);
+    let index = data[i].search(phrase);
+    let l = label[i];
+    data[i] = [data[i].slice(0,index), "<b>", data[i].slice(index)].join('');
+    data[i] = [data[i].slice(0, index+phrase_len + 3), "</b>", data[i].slice(index+phrase_len + 3)].join('');
+    if (l == "NEGATIVE") {
+      $('#sentences').append('<p class="sent_info" style="background-color: rgb(230, 130, 130)">' + data[i] + '</p>');
+    } else {
+      pos += 1;
+      $('#sentences').append('<p class="sent_info" style="background-color: rgb(90, 200, 100)">' + data[i] + '</p>');
+    }
+  }
+
+  document.getElementById('stats').innerHTML = 
+    `<b style='color:rgb(90, 200, 100)'>Positive:</b> ${pos} 
+    <b style='color:rgb(230, 130, 130)'>Negative:</b> ${data.length - pos}`;
+
+}
+
+  let oldPhrase = "";
+  $("#findBtn").click( () => {
+
+    console.debug("I click button");
+    let phrase = $("#phrase").val();
+
+    if (phrase == null || oldPhrase == phrase) {
+      return;
+    }
+
+    console.debug(`Searching for phrase '${phrase}' in the sentiment dataset`);
+    clearSentences();
+    $.ajax({
+      url: '/ajax/handle_phrase/',
+      data: {
+        'phrase': phrase
+      },
+      dataType: 'json',
+      success: function (sentiment) {
+        let data = sentiment.data;
+        let labels = sentiment.label;
+        console.log(labels);
+        handlePrint(data, labels, phrase);
+        //console.debug(sentiment.data);
+      }
+    });
+    oldPhrase = phrase;
+  });
+
+  $("#clearBtn").click(() => {
+    console.debug("click clear btn");
+    clearSentences();
+    $("#sent").val("");
+  });
+
+
+</script>
+
+{% endblock %}

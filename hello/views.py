@@ -94,6 +94,28 @@ def db(request):
 
     return render(request, "db.html", {"greetings": greetings})
 
+def sent_data(request):
+    sentiment.train_data;
+    return render(request, "sentiment.html")
+
+def handle_phrase(request):
+    data = []
+    label = []
+
+    phrase = request.GET.get('phrase', "asdfasdfasdfa")
+    d, l = find_phrase(phrase, sentiment.train_data, sentiment.train_labels)
+    data += d
+    label += l
+
+    d, l = find_phrase(phrase, sentiment.dev_data, sentiment.dev_labels)
+    data += d
+    label += l
+
+    return JsonResponse({
+        "data": data,
+        "label": label
+        })
+
 # ------------------------------------------
 # Helper functions for sentiment analysis. Should move to external *.py file in
 # the future.
@@ -102,6 +124,16 @@ def parse_sentence(sent):
     ''' Clean up the sentence for sentiment analysis '''
     sentence_vec = sentiment.count_vect.transform([sent])
     return sentence_vec
+
+def find_phrase(phrase, data, labels):
+    ''' Finds the phrase in the data '''
+    sents = []
+    lab = []
+    for sent, l in zip(data, labels):
+        if phrase in sent:
+            sents.append(sent)
+            lab.append(l)
+    return sents, lab
 
 def get_sentence_weights(sent_vec):
     weights = {}
