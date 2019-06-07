@@ -21,7 +21,7 @@ This data contains 40k tweets that were originally labeled with 13 classes, belo
 ![image](images/count_cat_13.png)
 
 Since there are way to many classes and some are redundant (like enthusiastic and happy) we combined them into 5 final classes.
-Below are the counts for the final 5 classes><br>
+Below are the counts for the final 5 classes<br>
 
 ![image](images/count_cat_5.png)
 
