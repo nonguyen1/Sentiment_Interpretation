@@ -3,6 +3,8 @@
 Live depoloyment can be seen here.  
 https://rocky-garden-38647.herokuapp.com
 
+Because this this model is hosted on Heroku's free plan it may take a while to the load up the site.
+
 ## To run locally
 1. To run the server you will need to install some dependencies.
 namely herokuCLI, Django, and postgresql installed 
